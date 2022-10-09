@@ -1,0 +1,14 @@
+{
+  "data": {
+    "data_path": "../datasets/mnist/",
+    "ifname": "train-images-idx3-ubyte.gz",
+    "lfname": "train-labels-idx1-ubyte.gz",
+    "dataset_type": "train",
+    "transforms": [],
+    "num_classes": 10
+  },
+  "train": {
+  },
+  "model": {
+  }
+}
