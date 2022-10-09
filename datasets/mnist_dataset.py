@@ -1,7 +1,7 @@
 import gzip
 import json
 from enum import Enum
-from typing import List, Callable
+from typing import List, Callable, Iterable
 
 import numpy as np
 
@@ -79,6 +79,7 @@ class Dataset:
 
     def one_hot_labels(self, label):
         """
+        for 10 classes label 5-> [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
         :param label: class label
         :return: one-hot encoding vector
         """
@@ -93,10 +94,24 @@ class Dataset:
         """
         images = self._images[idx]
         labels = self._labels[idx]
-        for transform in self._transforms:
-            images = transform(images)
+        if isinstance(idx, Iterable):
+            for image in images:
+                for transform in self._transforms:
+                    images = transform(image)
+        else:
+            for transform in self._transforms:
+                images = transform(images)
 
         return images, labels
+
+    def step_transform(self, idx):
+        image = self._images[idx]
+        label = self._labels[idx]
+        yield image, label
+        if self._transforms:
+            for transform in self._transforms:
+                image = transform(image)
+                yield image, label
 
     def show_statistics(self):
         """
