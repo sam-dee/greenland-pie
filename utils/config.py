@@ -30,3 +30,6 @@ class HelperObject(object):
 
     def __init__(self, dict_):
         self.__dict__.update(dict_)
+
+    def items(self):
+        return self.__dict__.items()
