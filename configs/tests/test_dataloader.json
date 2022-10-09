@@ -1,0 +1,34 @@
+{
+  "data": {
+    "data_path": "../datasets/mnist/",
+    "ifname": "train-images-idx3-ubyte.gz",
+    "lfname": "train-labels-idx1-ubyte.gz",
+    "dataset_type": "train",
+    "transforms": [
+      {
+        "GaussianNoise": {
+          "sigma": 100,
+          "mean": 255
+        }
+      },
+      {
+        "Pad": {
+          "image_size": 28,
+          "fill": 5,
+          "mode": "symmetric"
+        }
+      },
+      {
+        "Scale": {
+          "image_size": 20,
+          "scale": 2
+        }
+      }
+    ],
+    "num_classes": 10
+  },
+  "train": {
+  },
+  "model": {
+  }
+}
