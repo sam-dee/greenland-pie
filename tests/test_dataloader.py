@@ -28,7 +28,7 @@ def test_transforms():
 
     ds = Dataset(**params)
 
-    dl = DataLoader(ds, 10, None, None, 4, 1)
+    dl = DataLoader(ds, 10, 'test', True, 4, 'default')
     ds.read_data()
 
     next(dl.batch_generator())
