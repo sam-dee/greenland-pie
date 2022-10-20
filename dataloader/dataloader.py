@@ -1,5 +1,8 @@
+import math
+
 import numpy as np
 from matplotlib import pyplot as plt
+from numpy import sqrt
 
 from datasets.mnist_dataset import Dataset
 
@@ -95,15 +98,15 @@ class DataLoader:
 
         fig = plt.figure(figsize=figsize)
 
+        squary = math.ceil(sqrt(self.batch_size))
+
         for in_fig_img_index, idx in enumerate(self.current_indexes):
-            transforms = list(self.dataset.step_transform(idx))
-            num_imgs = len(self.current_indexes)
-            num_augs = len(transforms)
+            fig.add_subplot(squary, squary, 1 + in_fig_img_index, aspect='equal')
+            img, label = self.dataset[idx]
+            plt.imshow(img)
 
-            for t_idx, img in enumerate(transforms):
-                fig.add_subplot(num_imgs, num_augs, 1 + in_fig_img_index * num_augs + t_idx)
-                plt.imshow(img[0])
-                plt.axis('off')
-                plt.title(img[1])
+            plt.axis('off')
+            plt.title(label)
 
+        fig.tight_layout()
         plt.show()
