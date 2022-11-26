@@ -1,3 +1,4 @@
+import random
 from abc import ABC, abstractmethod
 
 import numpy as np
@@ -68,33 +69,53 @@ class Scale(Transformation):
 
 
 # TODO:
-@transform_registry.register
 class Crop(Transformation, ABC):
     pass
 
 
+@transform_registry.register
 class RandomCrop(Crop):
     def __init__(self, crop_size):
         """
         :param crop_size (int or tuple): размер вырезанного изображения.
         """
-        pass
+        self.crop_size = crop_size
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplemented
+    def __call__(self, img):
+        if type(self.crop_size) is int:
+            cropx = self.crop_size
+            cropy = self.crop_size
+        else:
+            cropx, cropy = self.crop_size
+
+        y, x = img.shape
+        startx = max(random.randint(0, x) // 2 - (cropx // 2), 0)
+        starty = max(random.randint(0, y) // 2 - (cropy // 2), 0)
+        return img[starty:starty + cropy, startx:startx + cropx]
 
 
+@transform_registry.register
 class CenterCrop(Crop):
     def __init__(self, crop_size):
         """
         :param crop_size (int or tuple): размер вырезанного изображения (вырезать по центру).
         """
-        pass
+        self.crop_size = crop_size
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplemented
+    def __call__(self, img):
+        if type(self.crop_size) is int:
+            cropx = self.crop_size
+            cropy = self.crop_size
+        else:
+            cropx, cropy = self.crop_size
+
+        y, x = img.shape
+        startx = x // 2 - (cropx // 2)
+        starty = y // 2 - (cropy // 2)
+        return img[starty:starty + cropy, startx:startx + cropx]
 
 
+@transform_registry.register
 class RandomRotateImage(Transformation):
     def __init__(self, min_angle, max_angle):
         """
@@ -102,10 +123,39 @@ class RandomRotateImage(Transformation):
         :param max_angle (int): максимальный угол поворота.
         Угол поворота должен быть выбран равномерно из заданного промежутка.
         """
+        self.min_angle = min_angle
+        self.max_angle = max_angle
         pass
 
-    def __call__(self, *args, **kwargs):
-        raise NotImplemented
+    def __call__(self, img):
+        a = self.change_angle_to_radius_unit(random.randint(self.min_angle, self.max_angle))
+
+        rotation_mat = np.transpose(np.array([[np.cos(a), -np.sin(a)],
+                                              [np.sin(a), np.cos(a)]]))
+        h, w = img.shape
+
+        pivot_point_x = w / 2
+        pivot_point_y = h / 2
+
+        new_img = np.zeros(img.shape, dtype='u1')
+
+        for height in range(h):
+            for width in range(w):
+                xy_mat = np.array([[width - pivot_point_x], [height - pivot_point_y]])
+
+                rotate_mat = np.dot(rotation_mat, xy_mat)
+
+                new_x = int(pivot_point_x + rotate_mat[0])
+                new_y = int(pivot_point_y + rotate_mat[1])
+
+                if (0 <= new_x <= w - 1) and (0 <= new_y <= h - 1):
+                    new_img[new_y, new_x] = img[height, width]
+
+        return new_img
+
+    def change_angle_to_radius_unit(self, angle):  # noqa
+        angle_radius = angle * (np.pi / 180)
+        return angle_radius
 
 
 @transform_registry.register

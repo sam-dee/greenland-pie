@@ -17,12 +17,6 @@
           "fill": 5,
           "mode": "symmetric"
         }
-      },
-      {
-        "Scale": {
-          "image_size": 20,
-          "scale": 2
-        }
       }
     ],
     "num_classes": 10

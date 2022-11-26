@@ -65,11 +65,12 @@ class Dataset:
 
             return images
 
-    def read_data(self):
+    def read_data(self, no_stat=False):
         self._labels = self._read_labels()
         self._images = self._read_images()
 
-        self.show_statistics()
+        if not no_stat:
+            self.show_statistics()
 
     def __len__(self):
         """
@@ -126,4 +127,4 @@ class Dataset:
                 print(f'Element {label} not found in classes!')
 
         print(f'[sample data length is {count} | number of classes is {self._num_classes}]')
-        print(json.dumps(by_class, indent=2))
+        print(tuple(by_class.items()))
